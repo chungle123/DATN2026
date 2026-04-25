@@ -26,11 +26,17 @@ public class MvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
+//    private void exposeDirectory(String pathPattern, ResourceHandlerRegistry registry) {
+//        Path path = Paths.get(pathPattern);
+//        String absolutePath = path.toFile().getAbsolutePath();
+//        String logicalPath = pathPattern.replace("../", "") + "/**";
+//        registry.addResourceHandler(logicalPath).addResourceLocations("file:/" + absolutePath + "/");
+//    }
+
     private void exposeDirectory(String pathPattern, ResourceHandlerRegistry registry) {
-        Path path = Paths.get(pathPattern);
-        String absolutePath = path.toFile().getAbsolutePath();
-        String logicalPath = pathPattern.replace("../", "") + "/**";
-        registry.addResourceHandler(logicalPath).addResourceLocations("file:/" + absolutePath + "/");
+        String logicalPath = "/" + pathPattern.replace("../", "") + "/**";
+        String absolutePath = "D:/DATN/DATN/DATN2026/FiveElementsShop/" + pathPattern + "/";
+        registry.addResourceHandler(logicalPath).addResourceLocations("file:///" + absolutePath);
     }
 
 }
