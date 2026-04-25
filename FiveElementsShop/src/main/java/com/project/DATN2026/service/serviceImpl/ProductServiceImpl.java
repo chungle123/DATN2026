@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product save(Product product) throws IOException {
 
-        if(product.getCode().trim() == "" || product.getCode() == null) {
+        if(product.getCode() == null || product.getCode().trim().isEmpty()) {
             Product productCurrent = productRepository.findTopByOrderByIdDesc();
             Long nextCode = (productCurrent == null) ? 1 : productCurrent.getId() + 1;
             String productCode = "SP" + String.format("%04d", nextCode);
@@ -72,8 +72,10 @@ public class ProductServiceImpl implements ProductService {
         }
 
         product.setPrice(minPrice);
-        product.setDeleteFlag(false);
-        product.setCreateDate(LocalDateTime.now());
+        if (product.getId() == null) {
+            product.setDeleteFlag(false);
+            product.setCreateDate(LocalDateTime.now());
+        }
         product.setUpdatedDate(LocalDateTime.now());
         return productRepository.save(product);
     }

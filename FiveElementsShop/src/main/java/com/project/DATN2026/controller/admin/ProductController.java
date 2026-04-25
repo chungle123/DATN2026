@@ -190,12 +190,22 @@ public class ProductController {
 
     @PostMapping("/product-edit/save-part1")
     public String handleSaveEditPart1(@ModelAttribute("product") Product product, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        String randomString = UUID.randomUUID().toString();
+        Product existingProduct = productService.getProductById(product.getId()).orElse(null);
+        if (existingProduct != null) {
+            existingProduct.setName(product.getName());
+            existingProduct.setBrand(product.getBrand());
+            existingProduct.setCategory(product.getCategory());
+            existingProduct.setMaterial(product.getMaterial());
+            existingProduct.setStatus(product.getStatus());
+            existingProduct.setGender(product.getGender());
+            existingProduct.setDescribe(product.getDescribe());
 
-        session.setAttribute("randomUpdateKey", randomString);
-
-        session.setAttribute("editProductPart1" + randomString, product);
-        return "redirect:/admin/product-edit/part2";
+            String randomString = UUID.randomUUID().toString();
+            session.setAttribute("randomUpdateKey", randomString);
+            session.setAttribute("editProductPart1" + randomString, existingProduct);
+            return "redirect:/admin/product-edit/part2";
+        }
+        return "redirect:/admin/product-all";
     }
 
     @GetMapping("/product-edit/part2")
