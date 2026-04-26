@@ -11,15 +11,23 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import java.io.ByteArrayInputStream;
+import com.project.DATN2026.service.ExcelExportService;
 
 @Controller
 public class BillReturnController {
     private final BillReturnService billReturnService;
     private final BillDetailRepository billDetailRepository;
+    private final ExcelExportService excelExportService;
 
-    public BillReturnController(BillReturnService billReturnService, BillRepository billRepository, BillDetailRepository billDetailRepository) {
+    public BillReturnController(BillReturnService billReturnService, BillRepository billRepository, BillDetailRepository billDetailRepository, ExcelExportService excelExportService) {
         this.billReturnService = billReturnService;
         this.billDetailRepository = billDetailRepository;
+        this.excelExportService = excelExportService;
     }
 
     @GetMapping("/admin-only/bill-return")
@@ -127,5 +135,20 @@ public class BillReturnController {
     @PostMapping("/api/bill-return")
     public BillReturnDto createBillReturn(@RequestBody BillReturnCreateDto billReturnCreateDto) {
         return billReturnService.createBillReturn(billReturnCreateDto);
+    }
+
+    @GetMapping("/admin-only/export-bill-returns")
+    public ResponseEntity<InputStreamResource> exportBillReturns(SearchBillReturnDto searchBillReturnDto) {
+        List<BillReturnDto> billReturnList = billReturnService.getAllBillReturns(searchBillReturnDto);
+        ByteArrayInputStream in = excelExportService.exportReturnsToExcel(billReturnList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=quanlyhoadon.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
     }
 }
