@@ -81,18 +81,27 @@
                     <td class="text-center" th:text="${bill.paymentMethod.name}"></td>
                     <td class="text-center" th:text="${bill.status}"></td>
                     <td class="">
-                        <span class="text-primary font-weight-bold js-show-detail cursor-pointer">Hiển thị thông tin sản phẩm</span>
-                        <div class="modal-cart-detail p-4">
-                            <div th:each="billDetail : *{bill.billDetail}">
-                                <a th:href="'/product-detail/' + ${billDetail.productDetail.product.code}" th:text="${billDetail.productDetail.product.name}"></a>
-                                <div>
-                                    <span class="mr-2" th:text="'Màu: ' + ${billDetail.productDetail.color.name}"></span>
-                                    <span class="mr-2" th:text="'Size: ' + ${billDetail.productDetail.size.name}"></span>
-                                    <span class="mr-2" th:text="'SL: ' + ${billDetail.quantity}"></span>
-                                </div>
-                                <hr>
+                        <button type="button" class="btn btn-outline-info btn-sm js-show-detail rounded-pill px-3 shadow-sm">
+                            <i class="fa fa-eye mr-1"></i> Xem chi tiết
+                        </button>
+                        <div class="modal-cart-detail">
+                            <div class="modal-header bg-light pb-2 pt-3 px-4 border-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+                                <h5 class="modal-title font-weight-bold mb-0 text-dark">Chi tiết đơn hàng</h5>
+                                <span class="close-modal-detail cursor-pointer text-muted" style="font-size: 1.5rem; line-height: 1; padding: 0 5px;">&times;</span>
                             </div>
-                            <span class="close-modal-detail cursor-pointer p-2">&times</span>
+                            <div class="modal-body p-4 text-left">
+                                <div th:each="billDetail : *{bill.billDetail}" class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                    <img th:if="${billDetail.productDetail.product.image.size() > 0}" th:src="${billDetail.productDetail.product.image[0].link}" class="img-thumbnail mr-3 p-1" style="width: 75px; height: 75px; object-fit: cover; border-radius: 8px;">
+                                    <div class="flex-grow-1">
+                                        <a th:href="'/product-detail/' + ${billDetail.productDetail.product.code}" class="font-weight-bold text-dark d-block mb-1" th:text="${billDetail.productDetail.product.name}" style="font-size: 15px; text-decoration: none;"></a>
+                                        <div class="mt-2">
+                                            <span class="badge badge-light border mr-1 text-muted py-1 px-2" th:text="'Màu: ' + ${billDetail.productDetail.color.name}"></span>
+                                            <span class="badge badge-light border mr-1 text-muted py-1 px-2" th:text="'Size: ' + ${billDetail.productDetail.size.name}"></span>
+                                            <span class="badge badge-info mr-1 py-1 px-2" th:text="'SL: ' + ${billDetail.quantity}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
                     <td>
@@ -172,6 +181,7 @@
         </div>
     </div>
 </div>
+<div class="modal-backdrop-custom"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" th:inline="javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script th:inline="javascript">
@@ -180,10 +190,12 @@
             $('.js-show-detail').on('click', function () {
                 $('.modal-cart-detail').removeClass('active')
                 $(this).parent().find('.modal-cart-detail').addClass('active')
+                $('.modal-backdrop-custom').addClass('active')
             })
 
-            $('.close-modal-detail').on('click', function () {
+            $('.close-modal-detail, .modal-backdrop-custom').on('click', function () {
                 $('.modal-cart-detail').removeClass('active')
+                $('.modal-backdrop-custom').removeClass('active')
             })
 
             $(".form-cancel-order").on('submit', function (e) {

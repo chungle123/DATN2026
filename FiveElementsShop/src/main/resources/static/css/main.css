@@ -3398,28 +3398,47 @@ input.num-product::-webkit-inner-spin-button {
   position: fixed;
   top: 50%;
   left: 50%;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  transform: translateX(-50%);
-  transform: translateY(-50%);
-  margin: 0 auto;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
   background-color: #fff;
-
-  z-index: 2;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1050;
   display: none;
+  overflow: hidden;
 }
 
 .modal-cart-detail.active {
   display: block;
 }
 
+.modal-cart-detail .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
 .close-modal-detail {
-  position: absolute;
-  right: 3px;
-  top: 3px;
+  transition: all 0.2s ease;
 }
 
 .close-modal-detail:hover {
-  background-color: red;
+  color: #f33a58 !important;
+}
+
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  display: none;
+}
+
+.modal-backdrop-custom.active {
+  display: block;
 }
 
 .tab-bills {
