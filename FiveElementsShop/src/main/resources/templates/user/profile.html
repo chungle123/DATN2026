@@ -14,14 +14,14 @@
             </div>
             <form id="address-form">
                 <div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
-                    <select class="js-select2" name="district" id="district">
+                    <select class="js-select2" name="province" id="province">
 
                     </select>
                     <div class="dropDownSelect2"></div>
                 </div>
 
                 <div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
-                    <select class="js-select2" name="ward" id="ward">
+                    <select class="js-select2" name="district" id="district">
 
                     </select>
                     <div class="dropDownSelect2"></div>
@@ -29,7 +29,7 @@
 
                 <div class="bor8 bg0 m-b-12">
                     <input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="street" id="street"
-                           placeholder="Số nhà, đường, xóm">
+                           placeholder="Số nhà, đường, phường/xã...">
                 </div>
                 <button type="button" class="btn btn-primary mt-2 w-100" id="save-address-btn">Lưu</button>
             </form>
@@ -252,88 +252,107 @@
 
             var addressSelected = {
                 street: '',
-                ward: '',
                 district: '',
-                province: 'Hà Nội',
-
+                province: '',
             }
 
             var province = []
             var district = []
-            var ward = []
 
+            // Hàm tiện ích để reinitialize Select2 sau khi thay đổi options
+            function reinitSelect2(selector) {
+                var $el = $(selector);
+                if ($el.hasClass('select2-hidden-accessible')) {
+                    $el.select2('destroy');
+                }
+                $el.select2({
+                    minimumResultsForSearch: 20,
+                    dropdownParent: $el.next('.dropDownSelect2')
+                });
+            }
+
+            // Load danh sách tỉnh/thành phố từ API mới
             $.ajax({
                 type: 'GET',
                 dataType: "json",
-                url: `https://vapi.vnappmob.com/api/province/district/01`,
+                url: 'https://provinces.open-api.vn/api/p/',
                 success: function (data) {
-                    district = data.results.map(item => ({ value: item.district_id, label: item.district_name }))
-                    loadDistrictSelect(data)
+                    province = data.map(item => ({ value: item.code.toString(), label: item.name }))
+                    loadProvinceSelect(data)
+                },
+                error: function() {
+                    console.log('Lỗi khi tải danh sách tỉnh/thành phố')
                 }
             })
 
-            function loadDistrictSelect(data) {
-                district = data.results.map(item => ({ value: item.district_id, label: item.district_name }))
-
-                var selectElement = document.getElementById("district");
-
+            function loadProvinceSelect(data) {
+                var selectElement = document.getElementById("province");
                 selectElement.innerHTML = '';
+                var defaultOption = document.createElement("option");
+                defaultOption.text = "Chọn tỉnh, thành phố";
+                defaultOption.value = ""
+                selectElement.appendChild(defaultOption);
 
+                for (var i = 0; i < data.length; i++) {
+                    var option = document.createElement("option");
+                    option.text = data[i].name;
+                    option.value = data[i].code;
+                    selectElement.appendChild(option);
+                }
+                reinitSelect2('#province');
+            }
+
+            $("#province").on('change', async function () {
+                var provinceCode = $(this).val()
+                document.getElementById("district").innerHTML = '<option value="">Chọn quận, huyện</option>';
+                reinitSelect2('#district');
+                addressSelected.district = ''
+
+                if (provinceCode !== "") {
+                    const selectedOption = province.find((option) => option.value === provinceCode)
+                    addressSelected.province = selectedOption.label
+                    await $.ajax({
+                        type: 'GET',
+                        dataType: "json",
+                        url: 'https://provinces.open-api.vn/api/p/' + provinceCode + '?depth=2',
+                        success: function (data) {
+                            district = data.districts.map(item => ({ value: item.code.toString(), label: item.name }))
+                            loadDistrictSelect(data.districts)
+                        },
+                        error: function() {
+                            console.log('Lỗi khi tải danh sách quận/huyện')
+                        }
+                    })
+                } else {
+                    addressSelected.province = ''
+                }
+            })
+
+            function loadDistrictSelect(districts) {
+                var selectElement = document.getElementById("district");
+                selectElement.innerHTML = '';
                 var defaultOption = document.createElement("option");
                 defaultOption.text = "Chọn quận, huyện";
                 defaultOption.value = ""
                 selectElement.appendChild(defaultOption);
 
-                for (var i = 0; i < data.results.length; i++) {
+                for (var i = 0; i < districts.length; i++) {
                     var option = document.createElement("option");
-                    option.text = data.results[i].district_name;
-                    option.value = data.results[i].district_id;
+                    option.text = districts[i].name;
+                    option.value = districts[i].code;
                     selectElement.appendChild(option);
                 }
+                reinitSelect2('#district');
             }
 
-            $("#district").on('change', async function () {
-                var districtId = $(this).val()
-
-                if (districtId == "") {
-                    $("#ward").html('')
-                } else {
-                    const selectedOption = district.find((option) => option.value === districtId)
+            $("#district").on('change', function () {
+                var districtCode = $(this).val()
+                if (districtCode !== "") {
+                    const selectedOption = district.find((option) => option.value === districtCode)
                     addressSelected.district = selectedOption.label
-                    await $.ajax({
-                        type: 'GET',
-                        dataType: "json",
-                        url: `https://vapi.vnappmob.com/api/province/ward/${districtId}`,
-                        success: function (data) {
-                            ward = data.results.map(item => ({value: item.ward_id, label: item.ward_name}))
-                            loadWardSelect(data)
-                        }
-                    })
+                } else {
+                    addressSelected.district = ''
                 }
-
-            })
-
-            function loadWardSelect(data) {
-                var selectElement = document.getElementById("ward");
-
-                selectElement.innerHTML = '';
-
-                var defaultOption = document.createElement("option");
-                defaultOption.text = "Chọn phường, xã";
-                defaultOption.value = ""
-                selectElement.appendChild(defaultOption);
-
-                for (var i = 0; i < data.results.length; i++) {
-                    var option = document.createElement("option");
-                    option.text = data.results[i].ward_name;
-                    option.value = data.results[i].ward_id;
-                    selectElement.appendChild(option);
-                }
-            }
-
-            $("#ward").on('change', function () {
-                const selectedOption = ward.find((option) => option.value === $(this).val());
-                addressSelected.ward = selectedOption.label
             })
 
             $('#add-address').on('click', function () {
@@ -346,14 +365,13 @@
 
             $("#save-address-btn").on('click', function () {
 
-                // const province = $("#province").val()
-                const district = $("#district").val()
-                const ward = $("#ward").val();
-                const street = $("#street").val().trim()
-                if (district == "" || ward == "" || street == "") {
+                const provinceVal = $("#province").val()
+                const districtVal = $("#district").val()
+                const streetVal = $("#street").val().trim()
+                if (provinceVal == "" || districtVal == "" || streetVal == "") {
                     swal("Lỗi", "Vui lòng nhập đầy đủ địa chỉ")
                 }else {
-                    addressSelected.street = street
+                    addressSelected.street = streetVal
                     var dataSend = {
                         address: Object.entries(addressSelected)
                             .filter(([key, value]) => value !== null && value !== '')
