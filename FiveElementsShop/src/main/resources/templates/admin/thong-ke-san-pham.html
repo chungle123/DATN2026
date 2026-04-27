@@ -411,25 +411,28 @@
             $('#best-seller-time-select').on('change', function () {
                 var value = $(this).val()
                 var currentDate = new Date();
+                var tomorrow = new Date();
+                tomorrow.setDate(currentDate.getDate() + 1);
+
                 if(value == "") {
                     callApiGetBestSellerAll()
                 }
                 if(value == 7) {
-                    var sevenDaysAgo = new Date();
-                    sevenDaysAgo.setDate(currentDate.getDate() - 7);
-                    callApiGetBestSellerInTime(formatToYYYYMMDD(sevenDaysAgo), formatToYYYYMMDD(new Date(currentDate.getDate() + 1)))
+                    var daysAgo = new Date();
+                    daysAgo.setDate(currentDate.getDate() - 7);
+                    callApiGetBestSellerInTime(formatToYYYYMMDD(daysAgo), formatToYYYYMMDD(tomorrow))
                 }
 
                 if(value == 15) {
-                    var sevenDaysAgo = new Date();
-                    sevenDaysAgo.setDate(currentDate.getDate() - 15);
-                    callApiGetBestSellerInTime(formatToYYYYMMDD(sevenDaysAgo), formatToYYYYMMDD(new Date(currentDate.getDate() + 1)))
+                    var daysAgo = new Date();
+                    daysAgo.setDate(currentDate.getDate() - 15);
+                    callApiGetBestSellerInTime(formatToYYYYMMDD(daysAgo), formatToYYYYMMDD(tomorrow))
                 }
 
                 if(value == 30) {
-                    var sevenDaysAgo = new Date();
-                    sevenDaysAgo.setDate(currentDate.getDate() - 30);
-                    callApiGetBestSellerInTime(formatToYYYYMMDD(sevenDaysAgo), formatToYYYYMMDD(new Date(currentDate.getDate() + 1)))
+                    var daysAgo = new Date();
+                    daysAgo.setDate(currentDate.getDate() - 30);
+                    callApiGetBestSellerInTime(formatToYYYYMMDD(daysAgo), formatToYYYYMMDD(tomorrow))
                 }
             })
 

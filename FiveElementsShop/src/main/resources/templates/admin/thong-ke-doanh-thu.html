@@ -91,27 +91,8 @@
                     <div class="d-flex float-right align-items-center ">
                         <label class="mr-2">Tháng</label>
                         <select class="form-select mr-2" id="month" style="width: 100px;">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11" selected>11</option>
-                            <option value="12">12</option>
-
                         </select>
                         <select class="form-select" id="year" style="width: 100px;">
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-
                         </select>
                         <button type="button" id="exportMonth" class="btn btn-outline-success ml-3 px-3 py-1">
                             <i class="fa fa-file-excel-o"></i> Tải Excel
@@ -125,12 +106,6 @@
                 <div class="chart-container bg-white">
                     <div class="d-flex float-right align-items-center ">
                         <select class="form-select" id="monthYear" style="width: 100px;">
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-
                         </select>
                     </div>
                 </div>
@@ -297,8 +272,34 @@
                 };
 
 
-                callApiGetInMonth(11, 2023)
-                callApiGetInYear(2023)
+                // Dynamically populate month/year dropdowns
+                var now = new Date();
+                var currentMonth = now.getMonth() + 1;
+                var currentYear = now.getFullYear();
+
+                // Populate month dropdown
+                var monthSelect = document.getElementById('month');
+                for (var m = 1; m <= 12; m++) {
+                    var opt = document.createElement('option');
+                    opt.value = m;
+                    opt.text = m;
+                    if (m === currentMonth) opt.selected = true;
+                    monthSelect.appendChild(opt);
+                }
+
+                // Populate year dropdowns (current year down to 2020)
+                var yearSelects = [document.getElementById('year'), document.getElementById('monthYear')];
+                yearSelects.forEach(function(sel) {
+                    for (var y = currentYear; y >= 2020; y--) {
+                        var opt = document.createElement('option');
+                        opt.value = y;
+                        opt.text = y;
+                        sel.appendChild(opt);
+                    }
+                });
+
+                callApiGetInMonth(currentMonth, currentYear)
+                callApiGetInYear(currentYear)
 
                 function callApiGetInMonth(month, year) {
                     $.ajax({
