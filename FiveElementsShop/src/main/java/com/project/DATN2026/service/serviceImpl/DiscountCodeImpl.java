@@ -107,17 +107,23 @@ public class DiscountCodeImpl implements DiscountCodeService {
     private DiscountCode convertToEntity(DiscountCodeDto discountCodeDto) {
         DiscountCode discountCode = new DiscountCode();
         discountCode.setId(discountCodeDto.getId());
-        discountCode.setCode(discountCodeDto.getCode().trim());
-        discountCode.setMaximumAmount(discountCodeDto.getMaximumAmount());
-        discountCode.setDiscountAmount(discountCodeDto.getDiscountAmount());
-        discountCode.setDetail(discountCodeDto.getDetail());
-        discountCode.setPercentage(discountCodeDto.getPercentage());
-        discountCode.setStartDate(discountCodeDto.getStartDate());
-        discountCode.setEndDate(discountCodeDto.getEndDate());
-        discountCode.setType(discountCodeDto.getType());
-        discountCode.setMinimumAmountInCart(discountCodeDto.getMinimumAmountInCart());
+        discountCode.setCode(discountCodeDto.getCode() != null ? discountCodeDto.getCode().trim() : "");
+        
+        // Handle potentially null fields that might cause DB ConstraintViolation
+        discountCode.setDetail((discountCodeDto.getDetail() != null && !discountCodeDto.getDetail().isEmpty()) 
+                               ? discountCodeDto.getDetail() : discountCode.getCode());
+                               
+        discountCode.setMaximumAmount(discountCodeDto.getMaximumAmount() != null ? discountCodeDto.getMaximumAmount() : 0);
+        discountCode.setDiscountAmount(discountCodeDto.getDiscountAmount() != null ? discountCodeDto.getDiscountAmount() : 0.0);
+        discountCode.setPercentage(discountCodeDto.getPercentage() != null ? discountCodeDto.getPercentage() : 0);
+        discountCode.setMinimumAmountInCart(discountCodeDto.getMinimumAmountInCart() != null ? discountCodeDto.getMinimumAmountInCart() : 0.0);
+        
+        discountCode.setStartDate(discountCodeDto.getStartDate() != null ? discountCodeDto.getStartDate() : new java.util.Date());
+        discountCode.setEndDate(discountCodeDto.getEndDate() != null ? discountCodeDto.getEndDate() : new java.util.Date());
+        discountCode.setType(discountCodeDto.getType() != null ? discountCodeDto.getType() : 1);
         discountCode.setMaximumUsage(discountCodeDto.getMaximumUsage());
         discountCode.setStatus(discountCodeDto.getStatus());
+        discountCode.setDeleteFlag(false);
         return discountCode;
     }
 }

@@ -20,7 +20,7 @@ import java.util.Date;
 @Table(name = "discount_code")
 public class DiscountCode {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Nationalized

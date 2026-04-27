@@ -61,10 +61,10 @@
                                 Phương thức giảm
                             </label>
                             <div>
-                                <input type="radio" class="custom-radio" th:field="*{type}" th:value="1" th:checked="${DiscountCode.type == 1}">
-                                <label th:for="type1">Giảm theo phần trăm</label>
-                                <input type="radio" class="custom-radio" th:field="*{type}" th:value="2" th:checked="${DiscountCode.type == 2}">
-                                <label th:for="type2">Giảm theo tiền</label>
+                                <input type="radio" class="custom-radio" th:field="*{type}" th:value="1" id="type1" th:checked="${DiscountCode.type == 1}">
+                                <label for="type1">Giảm theo phần trăm</label>
+                                <input type="radio" class="custom-radio" th:field="*{type}" th:value="2" id="type2" th:checked="${DiscountCode.type == 2}">
+                                <label for="type2">Giảm theo tiền</label>
                             </div>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
                                     Số tiền áp dụng cho đơn tối thiểu từ (đ)
                                 </label>
                                 <span class="red_require"> *</span>
-                                <input type="text" class="form-input" th:value="${#numbers.formatDecimal(DiscountCode.minimumAmountInCart, 0, 0)}" name="minimumAmountInCart" id="minimumAmountInCart" placeholder="VD: 100000 nếu áp dụng cho đơn tối từ 100.000VND">
+                                <input type="text" class="form-input" th:field="*{minimumAmountInCart}" placeholder="VD: 100000 nếu áp dụng cho đơn tối từ 100.000VND">
                                 <span class="error"></span>
                             </div>
                         </div>
