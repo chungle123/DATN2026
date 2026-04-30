@@ -34,7 +34,7 @@ public class ShopProductController {
     }
 
     @GetMapping("/getproduct")
-    public String getProduct(Model model, SearchProductDto searchProductDto,  @PageableDefault(size = 18) Pageable pageable) {
+    public String getProduct(Model model, SearchProductDto searchProductDto,  @PageableDefault(size = 18) Pageable pageable, @RequestParam(value = "ajax", required = false) Boolean ajax) {
 
         List<Category> categories = categoryService.getAll();
         Page<ProductDto> products = productService.searchProduct(searchProductDto, pageable);
@@ -96,6 +96,10 @@ public class ShopProductController {
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
         model.addAttribute("dataFilter", searchProductDto);
+
+        if (Boolean.TRUE.equals(ajax)) {
+            return "user/shop-product :: productGrid";
+        }
         return "user/shop-product";
     }
 

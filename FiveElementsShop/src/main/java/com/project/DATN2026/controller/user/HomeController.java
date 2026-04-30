@@ -29,7 +29,7 @@ public class HomeController {
     private CategoryService categoryService;
 
     @GetMapping("/")
-    public String gethome(Model model, SearchProductDto searchProductDto, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String gethome(Model model, SearchProductDto searchProductDto, @PageableDefault(size = 20, sort = "createDate", direction = Sort.Direction.DESC) Pageable pageable, @RequestParam(value = "ajax", required = false) Boolean ajax) {
         List<Category> categories = categoryService.getAll();
         Page<ProductDto> products = productService.searchProduct(searchProductDto, pageable);
 
@@ -91,6 +91,9 @@ public class HomeController {
         model.addAttribute("categories", categories);
         model.addAttribute("dataFilter", searchProductDto);
 
+        if (Boolean.TRUE.equals(ajax)) {
+            return "user/home-03 :: productGrid";
+        }
         return "user/home-03";
     }
 

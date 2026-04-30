@@ -647,11 +647,11 @@
                 <!-- Search product -->
                 <div class="dis-none panel-search w-full p-t-10 p-b-15">
                     <div class="bor8 dis-flex p-l-15">
-                        <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                        <button id="search-btn" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
                             <i class="zmdi zmdi-search"></i>
                         </button>
 
-                        <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
+                        <input id="search-product-input" class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product"
                                placeholder="Tìm kiếm">
                     </div>
                 </div>
@@ -758,6 +758,7 @@
                 </div>
             </div>
 
+            <div id="product-list-container" th:fragment="productGrid">
                     <div class="row isotope-grid">
                         <div th:each="product : ${products}" class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
                             <!-- Block2 -->
@@ -789,11 +790,11 @@
 <!--                <a href="#" class="flex-c-m how-pagination1 trans-04 m-all-7 active-pagination1">-->
 <!--                    1-->
 <!--                </a>-->
-
 <!--                <a href="#" class="flex-c-m how-pagination1 trans-04 m-all-7">-->
 <!--                    2-->
 <!--                </a>-->
 <!--            </div>-->
+            </div>
         </div>
     </section>
     <script>
@@ -803,7 +804,6 @@
                 $(this).removeClass('category-item-filter-active')
             }else {
                 $(this).addClass('category-item-filter-active')
-
             }
         })
 
@@ -817,59 +817,81 @@
             $(this).addClass('filter-link-active')
         })
 
+        function fetchProducts(urlToFetch) {
+            urlToFetch += urlToFetch.includes('?') ? '&ajax=true' : '?ajax=true';
+            $.ajax({
+                url: urlToFetch,
+                type: 'GET',
+                success: function(response) {
+                    $('#product-list-container').html(response);
+                    bindPagination();
+                },
+                error: function(error) {
+                    console.error("Error fetching products:", error);
+                }
+            });
+        }
 
+        function buildFilterUrl(page) {
+            var filterUrl = window.location.pathname + '?page=' + page;
+            var orderBy = $(".filter-order-buy").find('.filter-link-active').attr('data-sort');
+            var dataMinPrice = $(".filter-price").find('.filter-link-active').attr('data-min-price');
+            var dataMaxPrice = $(".filter-price").find('.filter-link-active').attr('data-max-price');
 
-        var url = '?page=0'
-        $('#filter-btn').on('click', function () {
-            var orderBy = $(".filter-order-buy").find('.filter-link-active').attr('data-sort')
-            var dataMinPrice = $(".filter-price").find('.filter-link-active').attr('data-min-price')
-            var dataMaxPrice = $(".filter-price").find('.filter-link-active').attr('data-max-price')
-
-            var dataCategoryEl = $('.category-item-filter-active')
-            var categoryIds = []
+            var dataCategoryEl = $('.category-item-filter-active');
+            var categoryIds = [];
             if(dataCategoryEl.length > 0) {
                 dataCategoryEl.each(function() {
-                    var dataCate = $(this); // Sử dụng $(this) thay vì $(item)
-                    var id = dataCate.attr('data-category');
-                    categoryIds.push(id);
+                    categoryIds.push($(this).attr('data-category'));
                 });
             }
-            if(orderBy) {
-                url += '&sort=' + orderBy
-            }
-            if(dataMinPrice) {
-                url += '&minPrice=' + dataMinPrice
-            }
-            if(dataMaxPrice) {
-                url += '&maxPrice=' + dataMaxPrice
-            }
+            if(orderBy) filterUrl += '&sort=' + orderBy;
+            if(dataMinPrice) filterUrl += '&minPrice=' + dataMinPrice;
+            if(dataMaxPrice) filterUrl += '&maxPrice=' + dataMaxPrice;
+            if(categoryIds.length > 0) filterUrl += '&categoryId=' + categoryIds.join(',');
 
-            if(categoryIds.length > 1) {
-                url += '&categoryId=' + categoryIds.join(',')
-            }
+            var keyword = $("#search-product-input").val();
+            if(keyword) filterUrl += '&keyword=' + keyword;
 
-            if(categoryIds.length == 1) {
-                url += '&categoryId=' + categoryIds[0]
-            }
+            var dataGenderEl = $(".filter-gender").find('button.how-active1').attr('data-filter');
+            if(dataGenderEl) filterUrl += '&gender=' + dataGenderEl;
 
-            window.location.href = url
+            return filterUrl;
+        }
+
+        $('#filter-btn').on('click', function () {
+            fetchProducts(buildFilterUrl(0));
         })
+
         $('#search-btn').on('click', function () {
-            if($("#search-product-input").val()) {
-                url += '&keyword=' + $("#search-product-input").val()
-                window.location.href = url
-            }
+            fetchProducts(buildFilterUrl(0));
         })
 
-        $('.filter-gender').on('click', function () {
-            let newURL = urlCurr.replace(/&gender=[^&]/, '');
-
-            var dataGenderEl = $(".filter-gender").find('button.how-active1').attr('data-filter')
-            if(dataGenderEl) {
-                newURL += '&gender=' + dataGenderEl
+        $('#search-product-input').on('keypress', function (e) {
+            if(e.which === 13) { // Enter key
+                fetchProducts(buildFilterUrl(0));
             }
-            window.location.href = '?page=0' + newURL
+        });
+
+        $('.filter-gender button').on('click', function () {
+            $('.filter-gender button').removeClass('how-active1');
+            $(this).addClass('how-active1');
+            fetchProducts(buildFilterUrl(0));
         })
+
+        function bindPagination() {
+            $('#product-list-container .pagination-link:not(.is-disabled)').on('click', function(e) {
+                e.preventDefault();
+                var href = $(this).attr('href');
+                if (href) {
+                    fetchProducts(href);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            bindPagination();
+        });
     </script>
 </div>
 
