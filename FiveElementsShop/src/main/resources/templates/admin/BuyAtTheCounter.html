@@ -474,22 +474,24 @@
                     <h5 class="font-bold text-blue-500 text-2xl" id="last-price">0</h5>
                 </div>
             </div>
-            <div class="">
-                <div class="col">
-                    <h6 class="font-bold">Tiền khách đưa: </h6>
+            <div id="cash-fields">
+                <div class="">
+                    <div class="col">
+                        <h6 class="font-bold">Tiền khách đưa: </h6>
+                    </div>
+                    <div class="col">
+                        <input class="border-none outline-none bg-transparent text-xl" type="text" name=""
+                               id="customerPayInput">
+                    </div>
                 </div>
-                <div class="col">
-                    <input class="border-none outline-none bg-transparent text-xl" type="text" name=""
-                           id="customerPayInput">
-                </div>
-            </div>
-            <hr>
-            <div class="mt-2">
-                <div class="col">
-                    <h6 class="text-blue-500">Tiền thừa trả khách: </h6>
-                </div>
-                <div class="col">
-                    <h6 class="text-xl" id="money-change">0</h6>
+                <hr>
+                <div class="mt-2">
+                    <div class="col">
+                        <h6 class="text-blue-500">Tiền thừa trả khách: </h6>
+                    </div>
+                    <div class="col">
+                        <h6 class="text-xl" id="money-change">0</h6>
+                    </div>
                 </div>
             </div>
 
@@ -502,6 +504,22 @@
                 <input type="radio" value="3" name="paymentMethod" id="payment-online"> <label class="mr-2">Chuyển
                 khoản</label>
             </div>
+
+            <script>
+                // Ẩn/hiện phần tiền khách đưa và tiền thừa theo phương thức thanh toán
+                document.addEventListener('DOMContentLoaded', function() {
+                    const cashFields = document.getElementById('cash-fields');
+                    document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
+                        radio.addEventListener('change', function() {
+                            if (this.value === '3') {
+                                cashFields.style.display = 'none';
+                            } else {
+                                cashFields.style.display = 'block';
+                            }
+                        });
+                    });
+                });
+            </script>
 
             <button
                     class="text-white w-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-bold rounded-lg text-2xl px-5 py-4 mt-3 text-center"
@@ -1493,7 +1511,10 @@
                         return;
                     }
 
-                    if(pay.customerPay == '') {
+                    var paymentMethodId = $('input[name="paymentMethod"]:checked').val()
+
+                    // Chỉ yêu cầu nhập tiền khách đưa khi thanh toán tiền mặt
+                    if(paymentMethodId != 3 && pay.customerPay == '') {
                         Swal.fire({
                             title: "Lỗi",
                             text: "Vui lòng nhập số tiền khách đưa",
@@ -1503,8 +1524,6 @@
                     }
 
                     const promotionPrice = parseInt(removeAnyNonDigit($("#voucher-discount").text())) + parseInt(removeAnyNonDigit($("#product-discount").text()))
-
-                    var paymentMethodId = $('input[name="paymentMethod"]:checked').val()
 
                     var dataSend = {
                         customer: {
@@ -1520,7 +1539,7 @@
                     // Xử lý khi pt thanh toán là chuyển khoản
                     if (paymentMethodId == 3) {
                         $(".qr-payment-container").removeClass('hidden');
-                        $(".qr-payment-container").find('img').attr("src", `https://img.vietqr.io/image/TCB-19037422831012-compact2.jpg?amount=${pay.requireMoney}&addInfo=Thanh%20%20toan%20don%20hang&accountName=Nguyen%20Ngoc%20Sang`);
+                        $(".qr-payment-container").find('img').attr("src", `https://img.vietqr.io/image/TCB-19037422831012-compact2.jpg?amount=${pay.requireMoney}&addInfo=Thanh%20%20toan%20don%20hang&accountName=Le%20Van%20Quoc%20Chung`);
                         dataSendIfChuyenKhoan = dataSend;
                     } else {
                         // Execute the AJAX request directly for other payment methods
