@@ -86,6 +86,57 @@
           </div>
         </div>
       </div>
+
+      <!-- Low Stock Alert -->
+      <div class="row" th:if="${lowStockCount > 0}">
+        <div class="col-md-12">
+          <div class="card" style="border-left: 4px solid #dc3545;">
+            <div class="card-header" style="background-color: #fff3cd;">
+              <h4 class="card-title float-left mt-2" style="color: #856404;">
+                <i class="fa fa-exclamation-triangle text-danger"></i>
+                Cảnh báo: <span th:text="${lowStockCount}"></span> sản phẩm sắp hết hàng
+                <small class="text-muted">(tồn kho ≤ <span th:text="${lowStockThreshold}"></span>)</small>
+              </h4>
+              <a th:href="@{/admin/product-all}" class="btn btn-outline-danger float-right veiwbutton">Quản lý kho</a>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover table-center">
+                  <thead>
+                  <tr>
+                    <th>Mã SP</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Kích cỡ</th>
+                    <th>Màu sắc</th>
+                    <th class="text-center">Tồn kho</th>
+                    <th class="text-center">Trạng thái</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="item : ${lowStockProducts}">
+                    <td>
+                      <a th:href="@{'/admin/chi-tiet-san-pham/' + ${item.maSanPham}}" th:text="${item.maSanPham}" class="text-primary"></a>
+                    </td>
+                    <td th:text="${item.tenSanPham}"></td>
+                    <td th:text="${item.kichCo}"></td>
+                    <td th:text="${item.mauSac}"></td>
+                    <td class="text-center">
+                      <span class="badge badge-pill bg-danger inv-badge" th:if="${item.soLuongTon == 0}" th:text="'Hết hàng'"></span>
+                      <span class="badge badge-pill bg-warning inv-badge" th:if="${item.soLuongTon > 0}" th:text="${item.soLuongTon}"></span>
+                    </td>
+                    <td class="text-center">
+                      <span class="badge badge-pill bg-danger inv-badge" th:if="${item.soLuongTon == 0}">Hết hàng</span>
+                      <span class="badge badge-pill bg-warning inv-badge" th:if="${item.soLuongTon > 0}">Sắp hết</span>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-md-12 col-lg-6">
           <div class="card card-chart">
