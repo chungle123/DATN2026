@@ -108,8 +108,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductSearchDto> listSearchProduct(String maSanPham, String tenSanPham, Long nhanHang, Long chatLieu, Long theLoai,Integer trangThai, Pageable pageable) {
-        Page<ProductSearchDto> productSearchDtos = productRepository.listSearchProduct(maSanPham,tenSanPham,nhanHang,chatLieu,theLoai,trangThai,pageable);
+    public Page<ProductSearchDto> listSearchProduct(String maSanPham, String tenSanPham, Long nhanHang, Long chatLieu, Long theLoai,Integer trangThai, Double danhGia, Pageable pageable) {
+        Page<ProductSearchDto> productSearchDtos = productRepository.listSearchProduct(maSanPham,tenSanPham,nhanHang,chatLieu,theLoai,trangThai,danhGia,pageable);
         return productSearchDtos;
     }
 
@@ -154,6 +154,7 @@ public class ProductServiceImpl implements ProductService {
         productDto.setPriceMin(product.getProductDetails().get(0).getPrice());
         productDto.setCreateDate(product.getCreateDate());
         productDto.setUpdatedDate(product.getUpdatedDate());
+        productDto.setAverageRating(product.getAverageRating());
 
         List<ProductDetailDto> productDetailDtoList = new ArrayList<>();
 
@@ -203,6 +204,7 @@ public class ProductServiceImpl implements ProductService {
         productDto.setDescription(product.getDescribe());
         productDto.setCreateDate(product.getCreateDate());
         productDto.setUpdatedDate(product.getUpdatedDate());
+        productDto.setAverageRating(product.getAverageRating());
 
         List<ProductDetailDto> productDetailDtoList = new ArrayList<>();
         Double priceMin = Double.valueOf(100000000);

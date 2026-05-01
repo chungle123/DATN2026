@@ -39,6 +39,9 @@ public class Product implements Serializable {
     @Nationalized
     private String describe;
 
+    @Column(name = "average_rating", columnDefinition = "float default 0.0")
+    private Double averageRating = 0.0;
+
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category category;
@@ -57,4 +60,7 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductDetail> productDetails;
 
+    public Double getAverageRating() {
+        return averageRating != null ? averageRating : 0.0;
+    }
 }

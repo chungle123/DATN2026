@@ -68,7 +68,8 @@ public class ProductController {
                                 @RequestParam(name = "nhanHang", required = false) Long nhanHang,
                                 @RequestParam(name = "chatLieu", required = false) Long chatLieu,
                                 @RequestParam(name = "theLoai", required = false) Long theLoai,
-                                @RequestParam(name = "trangThai", required = false) Integer trangThai) {
+                                @RequestParam(name = "trangThai", required = false) Integer trangThai,
+                                @RequestParam(name = "danhGia", required = false) Double danhGia) {
 
         int pageSize = 8;
         String[] sortParams = sortField.split(",");
@@ -84,8 +85,8 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page, pageSize, sort);
         Page<ProductSearchDto> listProducts;
 
-        if (maSanPham == null || tenSanPham == null || nhanHang == null || chatLieu == null || theLoai == null || trangThai==null) {
-            listProducts=productService.listSearchProduct(maSanPham,tenSanPham,nhanHang,chatLieu,theLoai,trangThai,pageable);
+        if (maSanPham == null || tenSanPham == null || nhanHang == null || chatLieu == null || theLoai == null || trangThai==null || danhGia == null) {
+            listProducts=productService.listSearchProduct(maSanPham,tenSanPham,nhanHang,chatLieu,theLoai,trangThai,danhGia,pageable);
         }else {
             listProducts = productService.getAll(pageable);
         }
@@ -95,6 +96,7 @@ public class ProductController {
         model.addAttribute("chatLieu",chatLieu);
         model.addAttribute("theLoai",theLoai);
         model.addAttribute("trangThai",trangThai);
+        model.addAttribute("danhGia", danhGia);
         model.addAttribute("sortDirection", sortDirection);
         model.addAttribute("sortField", sortField);
         model.addAttribute("items", listProducts);

@@ -25,4 +25,9 @@ public class ProductDto {
     private LocalDateTime createDate;
     private LocalDateTime updatedDate;
     private boolean isDiscounted;
+    private Double averageRating;
+
+    public Double getAverageRating() {
+        return averageRating != null ? averageRating : 0.0;
+    }
 }
