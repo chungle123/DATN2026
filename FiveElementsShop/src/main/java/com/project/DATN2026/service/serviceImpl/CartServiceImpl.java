@@ -172,8 +172,11 @@ public class CartServiceImpl implements CartService {
         bill.setPromotionPrice(orderDto.getPromotionPrice());
         bill.setReturnStatus(false);
         if (UserLoginUtil.getCurrentLogin() != null) {
-            Account account = UserLoginUtil.getCurrentLogin();
-            bill.setCustomer(account.getCustomer());
+            Account currentLogin = UserLoginUtil.getCurrentLogin();
+            Account account = accountRepository.findById(currentLogin.getId()).orElse(null);
+            if (account != null) {
+                bill.setCustomer(account.getCustomer());
+            }
         }
         Double total = Double.valueOf(0);
         List<BillDetail> billDetailList = new ArrayList<>();
@@ -218,6 +221,28 @@ public class CartServiceImpl implements CartService {
             discountCodeRepository.save(discountCode);
             bill.setDiscountCode(discountCode);
         }
+
+        Customer billCustomer = bill.getCustomer();
+        Long pointsUsed = orderDto.getPointsUsed() != null ? orderDto.getPointsUsed() : 0L;
+        if (billCustomer != null && pointsUsed > 0) {
+            if (billCustomer.getPoints() == null || billCustomer.getPoints() < pointsUsed) {
+                throw new ShopApiException(HttpStatus.BAD_REQUEST, "Điểm tích lũy không đủ");
+            }
+            double pointDiscount = pointsUsed * 2000.0;
+            if (pointDiscount > total) {
+                pointDiscount = total;
+                pointsUsed = (long) Math.ceil(pointDiscount / 2000.0);
+            }
+            total -= pointDiscount;
+            billCustomer.setPoints(billCustomer.getPoints() - pointsUsed);
+            customerRepository.save(billCustomer);
+            bill.setPointsUsed(pointsUsed);
+        } else {
+            bill.setPointsUsed(0L);
+        }
+
+        Long pointsEarned = (long) (total / 100000.0);
+        bill.setPointsEarned(pointsEarned);
 
         bill.setAmount(total);
         bill.setBillDetail(billDetailList);
@@ -311,6 +336,9 @@ public class CartServiceImpl implements CartService {
             bill.setDiscountCode(discountCode);
         }
 
+        bill.setPointsUsed(0L);
+        bill.setPointsEarned(0L);
+
         bill.setAmount(total);
         bill.setBillDetail(billDetailList);
         PaymentMethod paymentMethod = paymentMethodRepository.findById(orderDto.getPaymentMethodId()).orElseThrow(() -> new NotFoundException("Payment not found"));
@@ -327,7 +355,7 @@ public class CartServiceImpl implements CartService {
         payment.setOrderId(RandomUtils.generateRandomOrderId(8));
         paymentRepository.save(payment);
 
-        return new OrderDto(billNew.getId().toString(), orderDto.getCustomer(), billNew.getInvoiceType(), billNew.getStatus(), billNew.getPaymentMethod().getId(), billNew.getBillingAddress(), billNew.getPromotionPrice(), null, null, null);
+        return new OrderDto(billNew.getId().toString(), orderDto.getCustomer(), billNew.getInvoiceType(), billNew.getStatus(), billNew.getPaymentMethod().getId(), billNew.getBillingAddress(), billNew.getPromotionPrice(), null, null, null, null);
     }
 
     @Override

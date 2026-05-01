@@ -246,6 +246,20 @@
 									</span>
                         </div>
                     </div>
+                    
+                    <!-- DUNG DIEM -->
+                    <div class="flex-w flex-t bor12 p-t-15 p-b-30">
+                        <div class="size-208 w-full-ssm">
+									<span class="stext-110 cl2">
+										Dùng điểm: <br> (Bạn có <span th:text="${customerPoints != null ? customerPoints : 0}">0</span> điểm)
+									</span>
+                        </div>
+                        <div class="size-209">
+									<input type="number" id="pointsUsed" name="pointsUsed" class="form-control mb-1" th:max="${customerPoints != null ? customerPoints : 0}" placeholder="Nhập điểm" min="0" th:disabled="${customerPoints == null || customerPoints <= 0}">
+									<small class="text-danger" style="font-weight: bold;">(1 điểm = 2.000 VND)</small>
+                        </div>
+                    </div>
+
                     <div class="flex-w flex-t p-t-27 p-b-33">
                         <div class="size-208">
 									<span class="mtext-101 cl2">
@@ -546,8 +560,19 @@
                     total += subtotal;
                 });
                 $('#sub-total').text(formatNumber(total) + ' VND');
-                $('#all-total').text(formatNumber(total - parseFloat(removeAnyNonDigit($("#voucher-pic").text()))) + ' VND')
-                calculateVoucherPrice()
+                
+                calculateVoucherPrice();
+                
+                var voucherPrice = parseFloat(removeAnyNonDigit($("#voucher-pic").text())) || 0;
+                var pointsUsed = parseInt($("#pointsUsed").val()) || 0;
+                var pointDiscount = pointsUsed * 2000;
+                
+                var finalTotal = total - voucherPrice - pointDiscount;
+                if(finalTotal < 0) {
+                    finalTotal = 0;
+                }
+                
+                $('#all-total').text(formatNumber(finalTotal) + ' VND');
             }
 
             // Calculate the initial total and update subtotals
@@ -688,9 +713,36 @@
             });
 
             // =============================HANDLE SUBMIT==============================
+            
+            $("#pointsUsed").on('input', function() {
+                var maxPoints = parseInt($(this).attr('max')) || 0;
+                var val = parseInt($(this).val()) || 0;
+                if (val > maxPoints) {
+                     $(this).val(maxPoints);
+                } else if (val < 0) {
+                     $(this).val(0);
+                }
+                
+                var currentTotal = 0;
+                $('.table-row').each(function () {
+                    var subtotal = parseFloat($(this).find('.total-money').text().replace(/[^0-9]/g, ''));
+                    currentTotal += subtotal;
+                });
+                var voucherPrice = parseFloat(removeAnyNonDigit($("#voucher-pic").text())) || 0;
+                var remainingAmount = currentTotal - voucherPrice;
+                var maxPointsForTotal = Math.ceil(remainingAmount / 2000);
+                
+                if(parseInt($(this).val()) > maxPointsForTotal) {
+                    $(this).val(maxPointsForTotal);
+                }
+
+                calculateTotal();
+            });
+
             $("#submitBtn").on('click', async function () {
                 var voucherId = $("#selected-voucher").attr('data-selected')
                 var orderDetails = []
+                var pointsUsedVal = parseInt($("#pointsUsed").val()) || 0;
                 var promotion = removeAnyNonDigit($('#voucher-pic').text())
                 $(".product-item").each(function () {
                     orderDetails.push({
@@ -716,6 +768,7 @@
                     billingAddress: $('.shipping-choose.active p').text().trim(),
                     promotionPrice: promotion,
                     voucherId: voucherId,
+                    pointsUsed: pointsUsedVal,
                     orderDetailDtos: orderDetails
                 }
 

@@ -41,6 +41,12 @@ public class Bill implements Serializable {
 
     private Boolean returnStatus;
 
+    @Column(name = "points_used", columnDefinition = "bigint default 0")
+    private Long pointsUsed = 0L;
+
+    @Column(name = "points_earned", columnDefinition = "bigint default 0")
+    private Long pointsEarned = 0L;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customerId")
     private Customer customer;

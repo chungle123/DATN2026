@@ -15,4 +15,5 @@ public class CustomerDto {
     private String phoneNumber;
     private String email;
     private String address;
+    private Long points;
 }
