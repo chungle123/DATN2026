@@ -10,4 +10,5 @@ public interface ProductSearchDto {
     String getTheLoai();
 
     String getTrangThai();
+    Double getAverageRating();
 }

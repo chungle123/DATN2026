@@ -29,7 +29,7 @@ public interface ProductService {
 
     Page<Product> search(String productName, Pageable pageable);
 
-    Page<ProductSearchDto> listSearchProduct(String maSanPham,String tenSanPham,Long nhanHang,Long chatLieu,Long theLoai,Integer trangThai,Pageable pageable);
+    Page<ProductSearchDto> listSearchProduct(String maSanPham,String tenSanPham,Long nhanHang,Long chatLieu,Long theLoai,Integer trangThai,Double danhGia,Pageable pageable);
 
     Page<Product> getAllByStatus(int status, Pageable pageable);
 

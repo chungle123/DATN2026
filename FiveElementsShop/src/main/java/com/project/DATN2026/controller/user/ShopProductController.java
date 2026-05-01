@@ -13,7 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import com.project.DATN2026.utils.UserLoginUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,12 +25,15 @@ public class ShopProductController {
     private final ColorService colorService;
     private final ProductDetailService productDetailService;
     private final CategoryService categoryService;
-    public ShopProductController(ProductService productService, SizeService sizeService, ColorService colorService, ProductDetailService productDetailService, CategoryService categoryService) {
+    private final ReviewService reviewService;
+    
+    public ShopProductController(ProductService productService, SizeService sizeService, ColorService colorService, ProductDetailService productDetailService, CategoryService categoryService, ReviewService reviewService) {
         this.productService = productService;
         this.sizeService = sizeService;
         this.colorService = colorService;
         this.productDetailService = productDetailService;
         this.categoryService = categoryService;
+        this.reviewService = reviewService;
     }
 
     @GetMapping("/getproduct")
@@ -129,8 +132,44 @@ public class ShopProductController {
         if(product == null) {
             return "/error/404";
         }
+        
+        List<Review> reviews = reviewService.getReviewsByProductId(product.getId());
+        model.addAttribute("reviews", reviews);
+
+        boolean canReview = false;
+        Account currentLogin = UserLoginUtil.getCurrentLogin();
+        if (currentLogin != null && currentLogin.getCustomer() != null) {
+            canReview = reviewService.canReview(currentLogin.getCustomer().getId(), product.getId());
+        }
+        model.addAttribute("canReview", canReview);
+        
         model.addAttribute("product", product);
         return "user/product-detail";
+    }
+
+    @PostMapping("/product-detail/{productCode}/review")
+    public String addReview(@PathVariable String productCode,
+                            @RequestParam("rating") int rating,
+                            @RequestParam("review") String comment) {
+        Product product = productService.getProductByCode(productCode);
+        if (product == null) {
+            return "redirect:/error/404";
+        }
+
+        Account currentLogin = UserLoginUtil.getCurrentLogin();
+        if (currentLogin != null && currentLogin.getCustomer() != null) {
+            boolean canReview = reviewService.canReview(currentLogin.getCustomer().getId(), product.getId());
+            if (canReview) {
+                Review reviewObj = new Review();
+                reviewObj.setRating(rating);
+                reviewObj.setComment(comment);
+                reviewObj.setProduct(product);
+                reviewObj.setCustomer(currentLogin.getCustomer());
+                reviewObj.setCreatedAt(java.time.LocalDateTime.now());
+                reviewService.saveReview(reviewObj);
+            }
+        }
+        return "redirect:/product-detail/" + productCode;
     }
 
     @ResponseBody
