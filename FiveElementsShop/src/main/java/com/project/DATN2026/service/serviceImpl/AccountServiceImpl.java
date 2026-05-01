@@ -138,8 +138,11 @@ public class AccountServiceImpl implements AccountService {
     private AccountDto convertToDto(Account account) {
         AccountDto accountDto = new AccountDto();
         accountDto.setEmail(account.getEmail());
-        accountDto.setName(account.getCustomer().getName());
-        accountDto.setPhoneNumber(account.getCustomer().getPhoneNumber());
+        if(account.getCustomer() != null) {
+            accountDto.setName(account.getCustomer().getName());
+            accountDto.setPhoneNumber(account.getCustomer().getPhoneNumber());
+            accountDto.setPoints(account.getCustomer().getPoints() != null ? account.getCustomer().getPoints() : 0L);
+        }
         List<AddressShippingDto> addressShippingDtos = new ArrayList<>();
         List<AddressShipping> addressShippingList = addressShippingRepository.findAllByCustomer_Account_Id(account.getId());
         for (AddressShipping addressShipping:

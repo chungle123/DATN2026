@@ -62,6 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerDto.setName(customer.getName());
         customerDto.setEmail(customer.getEmail());
         customerDto.setPhoneNumber(customer.getPhoneNumber());
+        customerDto.setPoints(customer.getPoints() != null ? customer.getPoints() : 0L);
         return customerDto;
     }
 

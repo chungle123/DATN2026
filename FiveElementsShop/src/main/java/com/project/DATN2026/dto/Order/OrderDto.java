@@ -22,5 +22,6 @@ public class OrderDto {
     private double promotionPrice;
     private Long voucherId;
     private String orderId;
+    private Long pointsUsed = 0L;
     private List<OrderDetailDto> orderDetailDtos;
 }

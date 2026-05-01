@@ -26,6 +26,9 @@ public class Customer {
     private String phoneNumber;
     private String email;
 
+    @Column(name = "points", columnDefinition = "bigint default 0")
+    private Long points = 0L;
+
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddressShipping> addressShippings;
 

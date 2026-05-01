@@ -11,6 +11,7 @@ import com.project.DATN2026.exception.NotFoundException;
 import com.project.DATN2026.repository.BillRepository;
 import com.project.DATN2026.repository.ProductDetailRepository;
 import com.project.DATN2026.repository.ProductRepository;
+import com.project.DATN2026.repository.CustomerRepository;
 import com.project.DATN2026.repository.Specification.BillSpecification;
 import com.project.DATN2026.repository.Specification.ProductSpecification;
 import com.project.DATN2026.service.BillService;
@@ -45,6 +46,9 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private ProductDetailRepository productDetailRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public Page<BillDtoInterface> findAll(Pageable pageable) {
@@ -114,6 +118,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill updateStatus(String status, Long id) {
+        Bill bill = billRepository.findById(id).orElseThrow(() -> new NotFoundException("Không tìm thấy bill có mã" + id));
 
         // Nếu hủy thì cộng lại số lượng tồn
         if(status.equals("HUY")) {
@@ -124,9 +129,22 @@ public class BillServiceImpl implements BillService {
                 productDetail.setQuantity(quantityBefore + item.getSoLuong());
                 productDetailRepository.save(productDetail);
             });
+
+            if (bill.getCustomer() != null && bill.getPointsUsed() != null && bill.getPointsUsed() > 0) {
+                Customer customer = bill.getCustomer();
+                customer.setPoints((customer.getPoints() == null ? 0 : customer.getPoints()) + bill.getPointsUsed());
+                customerRepository.save(customer);
+            }
         }
 
-        Bill bill = billRepository.findById(id).orElseThrow(() -> new NotFoundException("Không tìm thấy bill có mã" + id));
+        if(status.equals("HOAN_THANH") && bill.getStatus() != BillStatus.HOAN_THANH) {
+            if (bill.getCustomer() != null && bill.getPointsEarned() != null && bill.getPointsEarned() > 0) {
+                Customer customer = bill.getCustomer();
+                customer.setPoints((customer.getPoints() == null ? 0 : customer.getPoints()) + bill.getPointsEarned());
+                customerRepository.save(customer);
+            }
+        }
+
         bill.setStatus(BillStatus.valueOf(status));
         bill.setUpdateDate(LocalDateTime.now());
         return billRepository.save(bill);

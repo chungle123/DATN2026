@@ -29,6 +29,7 @@ public class BillReturnServiceImpl implements BillReturnService {
     private final ProductDiscountRepository productDiscountRepository;
     private final ProductDetailRepository  productDetailRepository;
     private final ReturnDetailRepository returnDetailRepository;
+    private final CustomerRepository customerRepository;
 
     public BillReturnServiceImpl(BillReturnRepository billReturnRepository, BillRepository billRepository, BillDetailRepository billDetailRepository, ProductDetailRepository productDetailRepository, ProductDiscountRepository productDiscountRepository, ProductRepository productRepository, CustomerRepository customerRepository, ProductDetailRepository productDetailRepository1, ReturnDetailRepository returnDetailRepository) {
         this.billReturnRepository = billReturnRepository;
@@ -37,6 +38,7 @@ public class BillReturnServiceImpl implements BillReturnService {
         this.productDiscountRepository = productDiscountRepository;
         this.productDetailRepository = productDetailRepository1;
         this.returnDetailRepository = returnDetailRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Override
@@ -149,6 +151,24 @@ public class BillReturnServiceImpl implements BillReturnService {
            }
 
 
+           // Rollback points
+           if (bill.getCustomer() != null) {
+               Customer customer = bill.getCustomer();
+               if (bill.getPointsEarned() != null && bill.getPointsEarned() > 0) {
+                   Long currentPoints = customer.getPoints() == null ? 0 : customer.getPoints();
+                   Long newPoints = currentPoints - bill.getPointsEarned();
+                   if (newPoints < 0) newPoints = 0L;
+                   customer.setPoints(newPoints);
+               }
+               if (bill.getPointsUsed() != null && bill.getPointsUsed() > 0) {
+                   customer.setPoints((customer.getPoints() == null ? 0 : customer.getPoints()) + bill.getPointsUsed());
+               }
+               bill.setPointsEarned(0L);
+               bill.setPointsUsed(0L);
+               customerRepository.save(customer);
+               billRepository.save(bill);
+           }
+
            billReturnRepository.save(billReturn);
 
         return convertToDto(billReturn);
@@ -164,7 +184,7 @@ public class BillReturnServiceImpl implements BillReturnService {
         billReturnDetailDto.setReturnDate(billReturn.getReturnDate());
 
         if(bill.getCustomer() != null) {
-            billReturnDetailDto.setCustomerDto(new CustomerDto(bill.getCustomer().getId(), bill.getCustomer().getCode(), bill.getCustomer().getName(), bill.getCustomer().getPhoneNumber(), null, null));
+            billReturnDetailDto.setCustomerDto(new CustomerDto(bill.getCustomer().getId(), bill.getCustomer().getCode(), bill.getCustomer().getName(), bill.getCustomer().getPhoneNumber(), null, null, bill.getCustomer().getPoints()));
         }
 
         List<BillDetail> billDetails = bill.getBillDetail();
@@ -222,7 +242,7 @@ public class BillReturnServiceImpl implements BillReturnService {
         billReturnDetailDto.setReturnDate(billReturn.getReturnDate());
 
         if(bill.getCustomer() != null) {
-            billReturnDetailDto.setCustomerDto(new CustomerDto(bill.getCustomer().getId(), bill.getCustomer().getCode(), bill.getCustomer().getName(), bill.getCustomer().getPhoneNumber(), null, null));
+            billReturnDetailDto.setCustomerDto(new CustomerDto(bill.getCustomer().getId(), bill.getCustomer().getCode(), bill.getCustomer().getName(), bill.getCustomer().getPhoneNumber(), null, null, bill.getCustomer().getPoints()));
         }
 
         List<BillDetail> billDetails = bill.getBillDetail();
@@ -304,7 +324,7 @@ public class BillReturnServiceImpl implements BillReturnService {
         billReturnDto.setReturnStatus(billReturn.getReturnStatus());
         if(billReturn.getBill().getCustomer() != null) {
             Customer customer = billReturn.getBill().getCustomer();
-            CustomerDto customerDto = new CustomerDto(customer.getId(), customer.getCode(), customer.getName(), customer.getPhoneNumber(), customer.getEmail(), null);
+            CustomerDto customerDto = new CustomerDto(customer.getId(), customer.getCode(), customer.getName(), customer.getPhoneNumber(), customer.getEmail(), null, customer.getPoints());
             billReturnDto.setCustomer(customerDto);
         }
         return billReturnDto;

@@ -11,5 +11,6 @@ public class AccountDto {
     private String name;
     private String email;
     private String password;
+    private Long points;
     private List<AddressShippingDto> addressShippingList;
 }

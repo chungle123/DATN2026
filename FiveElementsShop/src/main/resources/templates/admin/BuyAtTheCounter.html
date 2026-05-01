@@ -1201,13 +1201,14 @@
                                     ${customerPhone}
                                 </span>
                             </div>
-                              <span id="delete-selected-customer-btn" class="p-1 hover:bg-gray-400 rounded-full font-bold cursor-pointer">&times</span>
+                              <span id="delete-selected-customer-btn" class="p-1 hover:bg-gray-400 rounded-full font-bold cursor-pointer">&times;</span>
                         </div>
                         `)
 
                     $('#delete-selected-customer-btn').click(() => {
                         $('.selected-customer.active').html('<span class="font-bold italic text-gray-500">--Khách lẻ--</span>')
                         $('.selected-customer.active').attr('selected-id', "")
+                        calculateLastPrice()
                     })
                 }
 
