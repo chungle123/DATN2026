@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FiveElements Pay — Tài khoản ngân hàng test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#f0f2f5;min-height:100vh}
+
+        .topbar{background:linear-gradient(135deg,#1a237e,#1565c0);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+        .topbar .logo{color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
+        .topbar .logo i{font-size:22px;color:#ffd54f}
+        .topbar .badge-live{background:#ef5350;color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+        .container{max-width:1100px;margin:0 auto;padding:28px 20px}
+        h1{font-size:22px;font-weight:700;color:#1a237e;margin-bottom:6px}
+        .subtitle{font-size:13px;color:#666;margin-bottom:24px}
+
+        /* SHOP ACCOUNT CARD */
+        .shop-card{background:linear-gradient(135deg,#1a237e,#283593,#1565c0);border-radius:16px;padding:24px 28px;color:#fff;margin-bottom:28px;box-shadow:0 8px 32px rgba(21,101,192,.25);position:relative;overflow:hidden}
+        .shop-card::before{content:'SHOP';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:80px;font-weight:800;opacity:.05;letter-spacing:-2px}
+        .shop-card .tag{background:rgba(255,213,79,.2);color:#ffd54f;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:6px;margin-bottom:12px}
+        .shop-card .bank-name{font-size:13px;opacity:.7;margin-bottom:4px}
+        .shop-card h2{font-size:20px;font-weight:700;margin-bottom:14px}
+        .shop-card .balance-label{font-size:11px;opacity:.6}
+        .shop-card .balance{font-size:38px;font-weight:800;color:#ffd54f;margin:4px 0 16px;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+        .shop-card .meta{display:flex;gap:40px;flex-wrap:wrap}
+        .shop-card .meta .item span:first-child{display:block;font-size:10px;opacity:.6;margin-bottom:2px}
+        .shop-card .meta .item span:last-child{font-size:15px;font-weight:600;letter-spacing:.5px}
+
+        /* ACCOUNTS TABLE */
+        .section-title{font-size:16px;font-weight:700;color:#333;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .section-title .note{font-size:11px;color:#888;font-weight:400;background:#f5f5f5;padding:3px 10px;border-radius:20px}
+
+        .accounts-table{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+        .accounts-table table{width:100%;border-collapse:collapse}
+        .accounts-table thead th{background:#fafafa;padding:12px 16px;text-align:left;font-size:12px;font-weight:600;color:#666;border-bottom:2px solid #f0f0f0}
+        .accounts-table tbody td{padding:12px 16px;font-size:13px;color:#333;border-bottom:1px solid #f5f5f5;transition:background .2s}
+        .accounts-table tbody tr:hover td{background:#f8f9ff}
+        .accounts-table tbody tr:last-child td{border-bottom:none}
+
+        .bank-tag{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:#1a237e}
+        .acc-num{font-family:monospace;font-size:13px;color:#e53935;font-weight:600;letter-spacing:.5px}
+        .holder{font-weight:600}
+        .balance-cell{font-weight:700;color:#2e7d32;font-size:14px}
+        .balance-cell.low{color:#e53935}
+        .otp-badge{background:#fff3e0;color:#e65100;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:2px;font-family:monospace}
+        .status-ok{background:#e8f5e9;color:#2e7d32;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+        .status-low{background:#ffebee;color:#c62828;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+
+        .refresh-bar{background:#e3f2fd;border-radius:10px;padding:10px 16px;margin-bottom:20px;font-size:12px;color:#1565c0;display:flex;align-items:center;gap:8px}
+        .refresh-bar i{animation:spin 2s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .last-updated{margin-left:auto;color:#888;font-size:11px}
+
+        .note-box{background:#fff8e1;border:1px solid #ffe082;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:#5d4037}
+        .note-box strong{color:#e65100}
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="logo">
+        <i class="fas fa-university"></i>
+        FiveElements Pay — Tài khoản ngân hàng test
+    </div>
+    <div class="badge-live"><i class="fas fa-circle" style="font-size:8px"></i> Live</div>
+</div>
+
+<div class="container">
+    <h1>Thông tin tài khoản test</h1>
+    <p class="subtitle">Danh sách tài khoản ngân hàng mô phỏng — Số dư cập nhật theo thời gian thực</p>
+
+    <div class="note-box">
+        <strong>⚠ Lưu ý khi thanh toán:</strong> Nhập đúng <strong>Ngân hàng</strong>, <strong>Số tài khoản</strong> và <strong>Tên chủ tài khoản</strong> như bảng bên dưới. OTP mô phỏng là <strong>123456</strong>.
+    </div>
+
+    <!-- SHOP ACCOUNT -->
+    <div class="shop-card" id="shopCard">
+        <div class="tag"><i class="fas fa-store"></i> Tài khoản nhận tiền của Shop</div>
+        <div class="bank-name" id="shopBank">Đang tải...</div>
+        <h2 id="shopName">---</h2>
+        <div class="balance-label">Số dư hiện tại</div>
+        <div class="balance" id="shopBalance">---</div>
+        <div class="meta">
+            <div class="item"><span>Số tài khoản</span><span id="shopAccNum">---</span></div>
+        </div>
+    </div>
+
+    <div class="refresh-bar">
+        <i class="fas fa-sync-alt"></i> Tự động cập nhật số dư mỗi 3 giây
+        <span class="last-updated" id="lastUpdated"></span>
+    </div>
+
+    <!-- CUSTOMER ACCOUNTS -->
+    <div class="section-title">
+        <i class="fas fa-users" style="color:#1565c0"></i> Tài khoản khách hàng
+        <span class="note">Dùng để thanh toán trên web</span>
+    </div>
+
+    <div class="accounts-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ngân hàng</th>
+                    <th>Số tài khoản</th>
+                    <th>Tên chủ tài khoản</th>
+                    <th>Số dư</th>
+                    <th>OTP</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody id="accountsBody">
+                <tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa"><i class="fas fa-spinner fa-spin"></i> Đang tải...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+var THRESHOLD = 0; // Số dư tối thiểu để thanh toán
+
+function fmt(v){return parseFloat(v||0).toLocaleString('vi-VN')}
+function now(){var d=new Date();return d.toLocaleTimeString('vi-VN')}
+
+function loadAccounts(){
+    fetch('/api/mock-bank/all-accounts')
+        .then(r=>r.json())
+        .then(function(data){
+            document.getElementById('lastUpdated').textContent='Cập nhật lúc '+now();
+
+            var shop=data.find(a=>a.isShopAccount);
+            var customers=data.filter(a=>!a.isShopAccount);
+
+            if(shop){
+                document.getElementById('shopBank').textContent=shop.bankName;
+                document.getElementById('shopName').textContent=shop.accountHolder;
+                document.getElementById('shopBalance').textContent=fmt(shop.balance)+' VNĐ';
+                document.getElementById('shopAccNum').textContent=shop.accountNumber;
+            }
+
+            var html='';
+            customers.forEach(function(a,i){
+                var ok=a.balance>THRESHOLD;
+                var statusBadge=ok
+                    ?'<span class="status-ok"><i class="fas fa-check"></i> Đủ số dư</span>'
+                    :'<span class="status-low"><i class="fas fa-times"></i> Không đủ</span>';
+                html+='<tr>'+
+                    '<td style="color:#888;font-weight:500">'+(i+1)+'</td>'+
+                    '<td><span class="bank-tag"><i class="fas fa-university" style="font-size:11px"></i>'+a.bankName+'</span></td>'+
+                    '<td><span class="acc-num">'+a.accountNumber+'</span></td>'+
+                    '<td><span class="holder">'+a.accountHolder+'</span></td>'+
+                    '<td><span class="balance-cell'+(ok?'':' low')+'">'+fmt(a.balance)+' đ</span></td>'+
+                    '<td><span class="otp-badge">123456</span></td>'+
+                    '<td>'+statusBadge+'</td>'+
+                '</tr>';
+            });
+            document.getElementById('accountsBody').innerHTML=html||'<tr><td colspan="7" style="text-align:center;padding:30px;color:#aaa">Chưa có dữ liệu</td></tr>';
+        })
+        .catch(function(){
+            document.getElementById('lastUpdated').textContent='Lỗi kết nối lúc '+now();
+        });
+}
+
+loadAccounts();
+setInterval(loadAccounts,3000);
+</script>
+</body>
+</html>

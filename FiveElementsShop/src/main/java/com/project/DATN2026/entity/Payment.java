@@ -1,5 +1,6 @@
 package com.project.DATN2026.entity;
 
+import com.project.DATN2026.entity.enumClass.PaymentStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,16 @@ public class Payment {
     private String orderStatus;
     private LocalDateTime paymentDate;
     private Integer statusExchange;
+
+    // Thông tin ngân hàng cho thanh toán online
+    private String bankName;
+    private String accountNumber;
+    private String accountHolder;
+    private String transactionContent;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status")
+    private PaymentStatus paymentStatus;
 
     @OneToOne
     @JoinColumn(name = "bill_id")
