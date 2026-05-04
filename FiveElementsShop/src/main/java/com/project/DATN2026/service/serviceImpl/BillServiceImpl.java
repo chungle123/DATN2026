@@ -16,6 +16,11 @@ import com.project.DATN2026.repository.Specification.BillSpecification;
 import com.project.DATN2026.repository.Specification.ProductSpecification;
 import com.project.DATN2026.service.BillService;
 import com.project.DATN2026.utils.UserLoginUtil;
+import com.project.DATN2026.entity.MockBankAccount;
+import com.project.DATN2026.entity.enumClass.PaymentStatus;
+import com.project.DATN2026.entity.Payment;
+import com.project.DATN2026.repository.MockBankAccountRepository;
+import com.project.DATN2026.repository.PaymentRepository;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.xssf.usermodel.*;
@@ -49,6 +54,12 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private MockBankAccountRepository mockBankAccountRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Override
     public Page<BillDtoInterface> findAll(Pageable pageable) {

@@ -8,7 +8,18 @@
 <body>
     <div class="main-wrapper" layout:fragment="content">
         <h4 class="mb-3">Các đơn hoàn tiền</h4>
-        <div class="alert alert-success" th:if="${successMessage != null}" th:text="${successMessage}"></div>
+        <div class="alert alert-success alert-dismissible fade show" th:if="${successMessage != null}">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" th:if="${errorMessage != null}">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <div class="alert alert-info alert-dismissible fade show" th:if="${infoMessage != null}">
+            <span th:text="${infoMessage}"></span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
 <!--        <div class="m-3">-->
 <!--            <div class="form-row">-->
 <!--                <div class="form-group col-md-2">-->
@@ -68,8 +79,10 @@
                         <span class="badge badge-pill bg-success inv-badge" th:if="${refund.statusExchange == 1}">Đã hoàn tiền</span>
                     </td>
                     <td>
-                        <form th:action="@{'/admin/confirm-refund/' + ${refund.orderId}}" method="post">
-                            <button type="submit" class="btn btn-success rounded" th:if="${refund.statusExchange!= null && refund.statusExchange==0}">Xác nhận</button>
+                        <form th:action="@{'/admin/confirm-refund/' + ${refund.orderId}}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn thực hiện hoàn tiền cho giao dịch này?')">
+                            <button type="submit" class="btn btn-success btn-sm rounded" th:if="${refund.statusExchange == 0}">
+                                <i class="fas fa-check-circle"></i> Xác nhận hoàn tiền
+                            </button>
                         </form>
                     </td>
                 </tr>

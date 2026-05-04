@@ -4,6 +4,7 @@ import com.project.DATN2026.config.ConfigVNPay;
 import com.project.DATN2026.dto.Payment.PaymentDto;
 import com.project.DATN2026.dto.Payment.PaymentResultDto;
 import com.project.DATN2026.entity.Payment;
+import com.project.DATN2026.entity.enumClass.PaymentStatus;
 import com.project.DATN2026.repository.PaymentRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,6 +112,7 @@ public class PaymentRestController {
         payment.setAmount(paymentResultDto.getAmount());
         payment.setOrderStatus("0");
         payment.setStatusExchange(0);
+        payment.setPaymentStatus(PaymentStatus.PENDING);
         paymentRepository.save(payment);
     }
 }
